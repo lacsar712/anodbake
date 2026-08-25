@@ -235,8 +235,14 @@ func (a *App) runTick(ctx context.Context) error {
 		_ = a.Trip(ctx, "anodepit_level")
 		return nil
 	}
-	if a.pitfire.Burner().TripRequired(a.Snapshot().Pitfire) {
+	// Promote pitfire interlocks (over-temperature / O2 runaway / burner trip)
+	// to a plant trip. Without this, a satisfied over-temperature interlock is
+	// silently dropped at the cross-layer handoff, the plant never reaches
+	// StateTrip, EvResetTrip stays an illegal transition, and the reset page
+	// surfaces a generic 409 conflict instead of the over-temperature reset.
+	if a.pitfire.Burner().TripRequired(snap.Pitfire) {
 		_ = a.Trip(ctx, "pitfire_overtemp")
+		return nil
 	}
 	return nil
 }
