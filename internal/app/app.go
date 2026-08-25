@@ -34,6 +34,11 @@ type App struct {
 	telemetry     *Telemetry
 	tickCancels    map[string]context.CancelFunc
 	pitchLoopCancels map[string]context.CancelFunc
+	// activePitchCancel is the stop-baking credential for THIS unit's pitch
+	// loop. It is per-App (per-unit) rather than package-global so that one
+	// unit's emergency stop / shutdown cannot cancel another unit's running
+	// baking loop (see handover note: "停焙凭据换列时没分到单元").
+	activePitchCancel context.CancelFunc
 	mu             sync.RWMutex
 }
 

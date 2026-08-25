@@ -18,24 +18,22 @@ func (a *App) advanceClock(d time.Duration) {
 	}
 }
 
-var activePitchCancel context.CancelFunc
-
 func (a *App) bindPitchLoop(holder string, ctx context.Context) context.Context {
 	a.mu.Lock()
-	if activePitchCancel != nil {
-		activePitchCancel()
+	if a.activePitchCancel != nil {
+		a.activePitchCancel()
 	}
 	child, cancel := context.WithCancel(ctx)
-	activePitchCancel = cancel
+	a.activePitchCancel = cancel
 	a.mu.Unlock()
 	return child
 }
 
 func (a *App) cancelPitchLoop(holder string) {
 	a.mu.Lock()
-	if activePitchCancel != nil {
-		activePitchCancel()
-		activePitchCancel = nil
+	if a.activePitchCancel != nil {
+		a.activePitchCancel()
+		a.activePitchCancel = nil
 	}
 	a.mu.Unlock()
 }
