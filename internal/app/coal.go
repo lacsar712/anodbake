@@ -75,7 +75,9 @@ func (a *App) RunCoalFeed(ctx context.Context, holder string, steps int) error {
 	loopCtx := a.bindPitchLoop(holder, ctx)
 	defer a.cancelPitchLoop(holder)
 	for i := 0; steps <= 0 || i < steps; i++ {
-		_ = loopCtx
+		if err := loopCtx.Err(); err != nil {
+			return fmt.Errorf("%w", model.ErrContextDone)
+		}
 		snap := a.Snapshot()
 		comb := snap.Pitfire
 		comb.PitchFlowTPH += 0.5
