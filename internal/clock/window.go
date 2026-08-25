@@ -39,7 +39,7 @@ func NewSoakWindow(clk ProcessClock) *SoakWindow {
 }
 
 func (p *SoakWindow) Ready(startedAt time.Time) bool {
-	return time.Since(startedAt) >= model.SoakWindow
+	return p.window.Satisfied(p.clk, startedAt)
 }
 
 func (p *SoakWindow) Require(startedAt time.Time) error {
