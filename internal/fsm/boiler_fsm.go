@@ -72,9 +72,10 @@ func (f *PitlineFSM) Dispatch(ctx context.Context, event PlantEvent) (model.Plan
 	}
 	next, ok := NextState(f.state, event)
 	if !ok {
-		if f.hooks != nil {
-			_ = f.hooks.RunAfter(ctx, f.state, f.state, event)
-		}
+		// Rejected transitions must not trigger after-hook side effects
+		// (e.g. the pitframe drive pulse); the state never changed, so no
+		// accepted transition occurred. Returning here leaves the plant in
+		// its current state without poking the execution chain.
 		return f.state, fmt.Errorf("%s from %s: %w", event, f.state, ErrIllegalTransition)
 	}
 	if event == EvIgnite && !f.pitchPermissive {
