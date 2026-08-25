@@ -233,6 +233,10 @@ func (a *App) runTick(ctx context.Context) error {
 	a.telemetry.RecordTick(firing)
 	if a.anodepit.TripRequired(anodepitReading) {
 		_ = a.Trip(ctx, "anodepit_level")
+		return nil
+	}
+	if a.pitfire.Burner().TripRequired(a.Snapshot().Pitfire) {
+		_ = a.Trip(ctx, "pitfire_overtemp")
 	}
 	return nil
 }
