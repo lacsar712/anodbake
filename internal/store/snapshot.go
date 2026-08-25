@@ -15,6 +15,6 @@ func CloneAnodepitSnapshot(s model.PlantSnapshot) AnodepitSnapshotView {
 		Anodepit:     s.Anodepit,
 		Revision: s.Revision,
 	}
-	out.Alarms = s.Alarms[:len(s.Alarms):len(s.Alarms)]
+	out.Alarms = append([]model.AlarmEvent(nil), s.Alarms...)
 	return out
 }
